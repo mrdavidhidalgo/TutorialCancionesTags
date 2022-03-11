@@ -1,17 +1,27 @@
-name: CI
+name: CI - features branches
 
 # Controls when the action will run. 
 on:
   push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+    branches:
+        - 'feature**'
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  job1:
-    name: Pruebas
+  merge-develop-to-branch:
+    name: Merge develop -> branch
     runs-on: ubuntu-latest
+    steps:
+        uses: tukasz/direct-merge-action@master
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          source-branch: develop
+          target-branch: ${{ github.ref }}
+
+  tests:
+    name: Correr pruebas
+    runs-on: ubuntu-latest
+    needs: merge-develop-to-branch
     steps:
     - name: Checkout de repositorio
       uses: actions/checkout@v2
@@ -26,3 +36,15 @@ jobs:
     - name: Correr pruebas
       id: correr-pruebas
       run: python -m unittest discover -s tests
+
+  merge-branch-to-develop:
+    name: Merge branch -> develop
+    runs-on: ubuntu-latest
+    needs: tests
+    if: ${{contains(github.event.head_commit.message.message, 'merge to develop') }}
+    steps:
+        uses: tukasz/direct-merge-action@master
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          source-branch: ${{ github.ref }}
+          target-branch: develop
