@@ -33,6 +33,7 @@ class AlbumTestCase(unittest.TestCase):
         self.assertEqual(consulta1.titulo, titulo_album1)
         self.assertIsNotNone(consulta2)
  
+ 
     def test_editar_album(self):
         nueva_descripcion_album = self.data_factory.sentence()
         self.coleccion.editar_album(2, "Clara luna-Mix", 2013, nueva_descripcion_album, "DISCO")
