@@ -6,12 +6,14 @@ on:
     branches:
         - 'feature**'
 
+
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   merge-develop-to-branch:
     name: Merge develop -> branch
     runs-on: ubuntu-latest
     steps:
+      - name: automerge
         uses: tukasz/direct-merge-action@master
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -41,8 +43,9 @@ jobs:
     name: Merge branch -> develop
     runs-on: ubuntu-latest
     needs: tests
-    if: ${{contains(github.event.head_commit.message.message, 'merge to develop') }}
+    if: ${{contains(github.event.head_commit.message, 'merge to develop')}}
     steps:
+      - name: automerge
         uses: tukasz/direct-merge-action@master
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
